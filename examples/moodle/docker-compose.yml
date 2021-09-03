@@ -15,7 +15,7 @@ services:
     volumes:
       - ./letsencrypt:/etc/letsencrypt
     environment:
-      - SERVER_NAME=www.example.com          # replace with your domain
+      - SERVER_NAME=www.website.com          # replace with your domain
       - AUTO_LETS_ENCRYPT=yes
       - REDIRECT_HTTP_TO_HTTPS=yes
       - DISABLE_DEFAULT_SERVER=yes
@@ -29,7 +29,7 @@ services:
       - REVERSE_PROXY_HOST=https://mymoodle:8443
 
   mymoodle:
-    image: bitnami/moodle
+    image: bitnami/moodle:latest
     restart: always
     volumes:
       - ./moodle-files:/bitnami/moodle
@@ -37,15 +37,16 @@ services:
     environment:
       - MOODLE_USERNAME=admin                # replace with your moodle admin username
       - MOODLE_PASSWORD=password             # replace with your moodle admin password
-      - MOODLE_EMAIL=moodle@example.com       # replace with your moodle admin email
+      - MOODLE_EMAIL=moodle@website.com       # replace with your moodle admin email
       - MOODLE_SITE_NAME=My Moodle           # replace with your moodle site name
       - MOODLE_DATABASE_HOST=mydb
       - MOODLE_DATABASE_NAME=moodle
       - MOODLE_DATABASE_USER=user
       - MOODLE_DATABASE_PASSWORD=db-user-pwd # replace with a stronger password (must match MYSQL_PASSWORD)
-
+    depends_on:
+      - mydb
   mydb:
-    image: mariadb
+    image: mariadb:10.5
     restart: always
     volumes:
       - ./db-data:/var/lib/mysql
@@ -54,3 +55,5 @@ services:
       - MYSQL_DATABASE=moodle
       - MYSQL_USER=user
       - MYSQL_PASSWORD=db-user-pwd           # replace with a stronger password (must match MOODLE_DATABASE_PASSWORD)
+      - MARIADB_CHARACTER_SET=utf8mb4
+      - MARIADB_COLLATE=utf8mb4_unicode_ci
